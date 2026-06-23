@@ -10,7 +10,7 @@ permissions:
     pull-requests: write
 
 env:
-    PLUGIN_ID: obsidian-plugin-starter # 替换为你的插件 ID
+    PLUGIN_ID: components-lib-downloader # 替换为你的插件 ID
 
 jobs:
     version-bump-precheck:

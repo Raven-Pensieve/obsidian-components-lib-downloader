@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-plugin-starter",
+	"name": "components-lib-downloader",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Downloads and manages components libraries files.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node --env-file-if-exists=.env scripts/deploy.mjs link && node scripts/esbuild.config.mjs dev",

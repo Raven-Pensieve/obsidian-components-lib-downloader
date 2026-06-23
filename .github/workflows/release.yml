@@ -10,7 +10,7 @@ permissions:
     id-token: write
     attestations: write
 env:
-    PLUGIN_ID: obsidian-plugin-starter # 插件ID
+    PLUGIN_ID: components-lib-downloader # 插件ID
 
 jobs:
     build:
