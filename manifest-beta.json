@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-plugin-starter",
-	"name": "Obsidian Plugin Starter",
+	"id": "components-lib-downloader",
+	"name": "Components Library Downloader",
 	"version": "1.0.0",
 	"minAppVersion": "1.11.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "Downloads and manages components libraries files.",
 	"author": "RavenHogWarts",
 	"authorUrl": "https://github.com/Raven-Pensieve",
 	"fundingUrl": {
