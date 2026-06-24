@@ -189,7 +189,7 @@ pnpm i18n:sync
 
 ## License
 
-This project is released under the [MIT](LICENSE) license.
+This project is released under the [GPL-3.0](LICENSE) license.
 
 ## Star History
 

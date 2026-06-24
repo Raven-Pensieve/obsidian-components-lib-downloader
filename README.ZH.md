@@ -191,7 +191,7 @@ pnpm i18n:sync
 
 ## 许可证
 
-此项目基于 [MIT](LICENSE) 许可证发布。
+此项目基于 [GPL-3.0](LICENSE) 许可证发布。
 
 ## Star 历史
 

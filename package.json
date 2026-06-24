@@ -20,7 +20,7 @@
 		"Components"
 	],
 	"author": "RavenHogWarts",
-	"license": "MIT",
+	"license": "GPL-3.0",
 	"engines": {
 		"node": ">=20.x"
 	},
