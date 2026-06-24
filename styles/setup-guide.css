@@ -1,0 +1,73 @@
+/* Setup guide styles */
+
+.cld-setup-guide {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 20px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 18px;
+	background: var(--background-primary);
+	box-shadow: 0 10px 28px rgb(15 23 42 / 0.06);
+	user-select: text;
+}
+
+.cld-setup-guide h3,
+.cld-setup-guide p {
+	margin: 0;
+}
+
+.cld-setup-guide ol {
+	margin: 0;
+	padding-left: 20px;
+	line-height: 1.7;
+}
+
+.cld-setup-guide-code,
+.cld-settings-guide-code {
+	padding: 14px;
+	border-radius: 14px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.cld-setup-guide-code-title,
+.cld-settings-guide-code-title {
+	margin-bottom: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.cld-setup-guide-code-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 8px;
+}
+
+.cld-setup-guide-code-header .cld-setup-guide-code-title {
+	margin-bottom: 0;
+}
+
+.cld-setup-guide-copy {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	padding: 6px 10px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.cld-setup-guide-code pre,
+.cld-settings-guide-code pre {
+	margin: 0;
+	overflow-x: auto;
+	white-space: pre;
+	user-select: text;
+}
