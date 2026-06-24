@@ -1,221 +1,191 @@
 import * as fs from "fs";
 import * as path from "path";
+import type { FeishuAttachment } from "../src/types/feishu";
+import {
+	DEFAULT_SETTINGS,
+	FEISHU_LIBRARY_PRESETS,
+	type IPluginSettings,
+} from "../src/types/types";
+import FeishuAuthService from "../src/utils/feishu/auth";
+import { searchAllRecords } from "../src/utils/feishu/bitable";
+import { downloadAttachment } from "../src/utils/feishu/download";
+import { resolveBitableTarget } from "../src/utils/feishu/wiki";
 
-type EnvMap = Record<string, string>;
+jest.mock(
+	"obsidian",
+	() => ({
+		requestUrl: jest.fn(
+			async (options: {
+				url: string;
+				method?: string;
+				headers?: Record<string, string>;
+				body?: string;
+			}) => {
+				const response = await fetch(options.url, {
+					method: options.method ?? "GET",
+					headers: options.headers,
+					body: options.body,
+				});
+				const arrayBuffer = await response.arrayBuffer();
+				const text = Buffer.from(arrayBuffer).toString("utf8");
+				let json: unknown = null;
 
-type FeishuApiResponse<T> = {
-	code: number;
-	msg: string;
-	data: T;
-};
+				try {
+					json = text ? JSON.parse(text) : null;
+				} catch {
+					json = null;
+				}
 
-type TenantTokenResponse = {
-	code: number;
-	msg: string;
-	tenant_access_token: string;
-	expire: number;
-};
+				return {
+					status: response.status,
+					json,
+					arrayBuffer,
+				};
+			},
+		),
+	}),
+	{ virtual: true },
+);
 
-type WikiNodeData = {
-	node: {
-		node_token: string;
-		obj_type: string;
-		obj_token: string;
-	};
-};
-
-type SearchRecordsData = {
-	has_more: boolean;
-	total: number;
-	items: Array<{
-		record_id: string;
-		fields: Record<string, unknown>;
-	}>;
-};
-
-type FeishuAttachment = {
-	file_token: string;
-	name: string;
-	size?: number;
-	type?: string;
-	url?: string;
-	tmp_url?: string;
-};
-
-const WIKI_URL =
-	"https://my.feishu.cn/wiki/KrFBwdOiUibf6PkWopWcJUTenzh?table=tbliYpzt4EGxEymU&view=vewfQKaEv2";
-const ATTACHMENT_FIELD_NAME = "xdb.js文件";
-
-function loadEnvFile(): EnvMap {
+function loadEnvMap() {
 	const envPath = path.resolve(process.cwd(), ".env");
-	const raw = fs.readFileSync(envPath, "utf8");
-	const env: EnvMap = {};
+	const env: Record<string, string> = { ...process.env } as Record<
+		string,
+		string
+	>;
 
+	if (!fs.existsSync(envPath)) {
+		return env;
+	}
+
+	const raw = fs.readFileSync(envPath, "utf8");
 	for (const line of raw.split(/\r?\n/)) {
 		const trimmed = line.trim();
-		if (!trimmed || trimmed.startsWith("#")) continue;
+		if (!trimmed || trimmed.startsWith("#")) {
+			continue;
+		}
 
 		const separatorIndex = trimmed.indexOf("=");
-		if (separatorIndex === -1) continue;
+		if (separatorIndex === -1) {
+			continue;
+		}
 
 		const key = trimmed.slice(0, separatorIndex).trim();
-		let value = trimmed.slice(separatorIndex + 1).trim();
-		value = value.replace(/^['"]|['"]$/g, "");
-		env[key] = value;
+		const value = trimmed
+			.slice(separatorIndex + 1)
+			.trim()
+			.replace(/^['"]|['"]$/g, "");
+		if (!(key in env)) {
+			env[key] = value;
+		}
 	}
 
 	return env;
 }
 
-async function postJson<T>(url: string, body: unknown): Promise<T> {
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json; charset=utf-8",
+function getEnvValue(env: Record<string, string>, ...keys: string[]) {
+	for (const key of keys) {
+		const value = env[key];
+		if (value) {
+			return value;
+		}
+	}
+
+	return "";
+}
+
+function loadIntegrationSettings(): IPluginSettings {
+	const env = loadEnvMap();
+	return {
+		feishu: {
+			appId: getEnvValue(env, "appId", "APP_ID", "FEISHU_APP_ID"),
+			appSecret: getEnvValue(
+				env,
+				"appSecret",
+				"APP_SECRET",
+				"FEISHU_APP_SECRET",
+			),
+			downloadPaths: DEFAULT_SETTINGS.feishu.downloadPaths,
 		},
-		body: JSON.stringify(body),
-	});
-
-	return (await response.json()) as T;
+	};
 }
 
-async function getJson<T>(url: string, token: string): Promise<FeishuApiResponse<T>> {
-	const response = await fetch(url, {
-		method: "GET",
-		headers: {
-			Authorization: `Bearer ${token}`,
-			"Content-Type": "application/json; charset=utf-8",
-		},
-	});
+describe("feishu xdb attachment download", () => {
+	jest.setTimeout(60000);
 
-	return (await response.json()) as FeishuApiResponse<T>;
-}
+	const settings = loadIntegrationSettings();
 
-async function resolveTenantAccessToken(env: EnvMap): Promise<string> {
-	const tokenResult = await postJson<TenantTokenResponse>(
-		"https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
-		{
-			app_id: env.appId,
-			app_secret: env.appSecret,
-		},
-	);
+	it("downloads a real xdb attachment with existing helper", async () => {
+		expect(settings.feishu.appId).toBeTruthy();
+		expect(settings.feishu.appSecret).toBeTruthy();
 
-	expect(tokenResult.code).toBe(0);
-	expect(tokenResult.tenant_access_token).toBeTruthy();
+		const service = new FeishuAuthService();
+		const tenantToken = await service.getTenantAccessToken(settings);
+		const resolved = await resolveBitableTarget(
+			FEISHU_LIBRARY_PRESETS.xdbjs.wikiUrl,
+			tenantToken,
+		);
+		const records = await searchAllRecords(
+			tenantToken,
+			resolved.appToken,
+			resolved.tableId,
+			resolved.viewId,
+		);
 
-	return tokenResult.tenant_access_token;
-}
-
-async function resolveAppToken(tenantAccessToken: string, wikiNodeToken: string): Promise<string> {
-	const getNodeUrl = new URL("https://open.feishu.cn/open-apis/wiki/v2/spaces/get_node");
-	getNodeUrl.searchParams.set("token", wikiNodeToken);
-
-	const nodeResult = await getJson<WikiNodeData>(getNodeUrl.toString(), tenantAccessToken);
-	expect(nodeResult.code).toBe(0);
-	expect(nodeResult.data.node.obj_type).toBe("bitable");
-	expect(nodeResult.data.node.obj_token).toBeTruthy();
-
-	return nodeResult.data.node.obj_token;
-}
-
-async function searchRecords(
-	tenantAccessToken: string,
-	appToken: string,
-	tableId: string,
-	viewId: string,
-): Promise<FeishuApiResponse<SearchRecordsData>> {
-	const searchUrl = new URL(
-		`https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/search`,
-	);
-	searchUrl.searchParams.set("page_size", "10");
-
-	const response = await fetch(searchUrl.toString(), {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${tenantAccessToken}`,
-			"Content-Type": "application/json; charset=utf-8",
-		},
-		body: JSON.stringify({
-			view_id: viewId || undefined,
-		}),
-	});
-
-	return (await response.json()) as FeishuApiResponse<SearchRecordsData>;
-}
-
-function getAttachmentsFromRecord(fields: Record<string, unknown>, fieldName: string): FeishuAttachment[] {
-	const value = fields[fieldName];
-	if (!Array.isArray(value)) return [];
-	return value as FeishuAttachment[];
-}
-
-describe("Feishu xdb attachment download", () => {
-	jest.setTimeout(30000);
-
-	const env = loadEnvFile();
-	const wikiUrl = new URL(WIKI_URL);
-	const wikiNodeToken = wikiUrl.pathname.split("/").filter(Boolean).pop() ?? "";
-	const tableId = wikiUrl.searchParams.get("table") ?? "";
-	const viewId = wikiUrl.searchParams.get("view") ?? "";
-
-	it("can download attachment from xdb.js field", async () => {
-		expect(env.appId).toBeTruthy();
-		expect(env.appSecret).toBeTruthy();
-		expect(wikiNodeToken).toBeTruthy();
-		expect(tableId).toBeTruthy();
-
-		const tenantAccessToken = await resolveTenantAccessToken(env);
-		const appToken = await resolveAppToken(tenantAccessToken, wikiNodeToken);
-		const recordsResult = await searchRecords(tenantAccessToken, appToken, tableId, viewId);
-
-		expect(recordsResult.code).toBe(0);
-
-		const recordWithAttachment = recordsResult.data.items.find((item) => {
-			return getAttachmentsFromRecord(item.fields, ATTACHMENT_FIELD_NAME).length > 0;
-		});
+		const recordWithAttachment = records.find((record) =>
+			Object.values(record.fields).some(
+				(value) =>
+					Array.isArray(value) &&
+					value.some(
+						(item) =>
+							item &&
+							typeof item === "object" &&
+							"file_token" in item &&
+							"name" in item,
+					),
+			),
+		);
 
 		expect(recordWithAttachment).toBeTruthy();
 
-		const attachments = getAttachmentsFromRecord(recordWithAttachment!.fields, ATTACHMENT_FIELD_NAME);
-		const attachment = attachments[0];
+		const attachment = Object.values(recordWithAttachment!.fields)
+			.flatMap((value) => (Array.isArray(value) ? value : []))
+			.find((item): item is FeishuAttachment =>
+				Boolean(
+					item &&
+					typeof item === "object" &&
+					"file_token" in item &&
+					"name" in item,
+				),
+			);
 
 		expect(attachment).toBeTruthy();
-		expect(attachment.file_token).toBeTruthy();
+		const buffer = await downloadAttachment(tenantToken, attachment!);
 
-		const downloadUrl = attachment.url ?? `https://open.feishu.cn/open-apis/drive/v1/medias/${attachment.file_token}/download`;
-		const response = await fetch(downloadUrl, {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${tenantAccessToken}`,
-			},
-		});
-
-		expect(response.ok).toBe(true);
-
-		const arrayBuffer = await response.arrayBuffer();
-		const buffer = Buffer.from(arrayBuffer);
-		expect(buffer.length).toBeGreaterThan(0);
-
-		const outputDir = path.resolve(process.cwd(), "test", "downloads");
-		fs.mkdirSync(outputDir, { recursive: true });
-
-		const fileName = (attachment.name || `${attachment.file_token}.bin`).replace(/[\\/:*?"<>|]/g, "_");
-		const outputPath = path.resolve(outputDir, fileName);
-		fs.writeFileSync(outputPath, buffer);
+		expect(buffer.byteLength).toBeGreaterThan(0);
 
 		console.log(
 			JSON.stringify(
 				{
 					recordId: recordWithAttachment!.record_id,
-					fieldName: ATTACHMENT_FIELD_NAME,
-					fileToken: attachment.file_token,
-					fileName,
-					outputPath,
-					bytes: buffer.length,
+					fileToken: attachment!.file_token,
+					fileName: attachment!.name,
+					bytes: buffer.byteLength,
 				},
 				null,
 				2,
 			),
 		);
+	});
+
+	it("throws when attachment has no download url", async () => {
+		const attachment: FeishuAttachment = {
+			file_token: "file_token_missing_url",
+			name: "xdb.js",
+		};
+
+		await expect(
+			downloadAttachment("tenant-token", attachment),
+		).rejects.toThrow("Attachment xdb.js does not include a download url.");
 	});
 });

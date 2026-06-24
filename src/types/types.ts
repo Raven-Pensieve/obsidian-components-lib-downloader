@@ -1,7 +1,71 @@
+export type OverwriteMode = "skip" | "rename" | "overwrite";
+export type FeishuLibraryPreset = "components" | "xdbjs" | "forms";
+
+export interface LibraryDownloadPaths {
+	xdbjs: string;
+	components: string;
+	forms: string;
+	formScripts: string;
+}
+
+export interface FeishuLibraryPresetConfig {
+	wikiUrl: string;
+	targetFolderName: string;
+	visibleFieldKeys: string[];
+}
+
+export const FEISHU_LIBRARY_PRESETS: Record<
+	FeishuLibraryPreset,
+	FeishuLibraryPresetConfig
+> = {
+	components: {
+		wikiUrl:
+			"https://my.feishu.cn/wiki/GDMjwP9rPiuTFwkg0BhcsOfDnab?table=tblxUkoeHQ9gpFya",
+		targetFolderName: "components",
+		visibleFieldKeys: ["作者", "描述"],
+	},
+	xdbjs: {
+		wikiUrl:
+			"https://my.feishu.cn/wiki/KrFBwdOiUibf6PkWopWcJUTenzh?table=tbliYpzt4EGxEymU",
+		targetFolderName: "xdbjs",
+		visibleFieldKeys: ["作者", "描述"],
+	},
+	forms: {
+		wikiUrl:
+			"https://my.feishu.cn/wiki/V7SfwXcGmiFqDWkk2Wnc8PCOnPf?table=tblYjPkaaTOujkEY",
+		targetFolderName: "forms",
+		visibleFieldKeys: ["标签", "描述", "类型"],
+	},
+};
+
+export interface IFeishuSettings {
+	appId: string;
+	appSecret: string;
+	downloadPaths: LibraryDownloadPaths;
+}
+
+export interface DownloadedFileState {
+	libraryPreset: FeishuLibraryPreset;
+	recordId: string;
+	fileToken: string;
+	fileName: string;
+	targetPath: string;
+	downloadedAt: string;
+}
+
 export interface IPluginSettings {
-	dev: string;
+	feishu: IFeishuSettings;
 }
 
 export const DEFAULT_SETTINGS: IPluginSettings = {
-	dev: "This is a sample plugin development setting.",
+	feishu: {
+		appId: "",
+		appSecret: "",
+		downloadPaths: {
+			xdbjs: "FeishuDownloads/xdbjs",
+			components: "FeishuDownloads/components",
+			forms: "FeishuDownloads/forms",
+			formScripts: "FeishuDownloads/forms/scripts",
+		},
+	},
 };

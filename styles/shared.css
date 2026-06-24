@@ -1,0 +1,173 @@
+/* Shared styles */
+
+.cld-eyebrow,
+.cld-meta-pill,
+.cld-tab,
+.cld-download-button,
+.cld-hero-actions button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.cld-hero-actions button,
+.cld-tab,
+.cld-download-button {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 12px;
+	padding: 10px 14px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	cursor: pointer;
+	transition:
+		transform 120ms ease,
+		box-shadow 120ms ease,
+		border-color 120ms ease;
+}
+
+.cld-hero-actions button:hover,
+.cld-tab:hover,
+.cld-download-button:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 10px 20px rgb(15 23 42 / 0.08);
+	border-color: var(--interactive-accent);
+}
+
+.cld-hero-actions button.is-primary,
+.cld-download-button {
+	background: linear-gradient(
+		135deg,
+		var(--interactive-accent),
+		color-mix(in srgb, var(--interactive-accent) 78%, white 22%)
+	);
+	color: var(--text-on-accent);
+	border-color: transparent;
+}
+
+.cld-tab {
+	font-weight: 600;
+	background: var(--background-secondary);
+}
+
+.cld-tab.is-active {
+	background: linear-gradient(
+		135deg,
+		rgb(125 92 255 / 0.15),
+		rgb(79 172 254 / 0.12)
+	);
+	border-color: color-mix(in srgb, var(--interactive-accent) 60%, white 40%);
+	color: var(--text-accent);
+}
+
+.cld-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 44px 20px;
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: 18px;
+	background: var(--background-secondary);
+	text-align: center;
+}
+
+.cld-empty-state h3,
+.cld-hero-copy h2 {
+	margin: 0;
+}
+
+.cld-empty-state p,
+.cld-hero-copy p,
+.cld-attachment-info span {
+	margin: 0;
+	color: var(--text-muted);
+}
+
+.cld-skeleton-line {
+	height: 12px;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		rgb(255 255 255 / 0.08),
+		rgb(255 255 255 / 0.16),
+		rgb(255 255 255 / 0.08)
+	);
+	background-size: 200% 100%;
+	animation: cld-skeleton 1.6s linear infinite;
+}
+
+.cld-skeleton-line.is-wide {
+	width: 88%;
+}
+
+.cld-skeleton-line.is-short {
+	width: 42%;
+}
+
+.cld-download-progress-modal,
+.cld-overwrite-modal {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.cld-download-progress-modal h3,
+.cld-download-progress-status,
+.cld-overwrite-modal p {
+	margin: 0;
+}
+
+.cld-download-progress-track {
+	overflow: hidden;
+	height: 10px;
+	border-radius: 999px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.cld-download-progress-bar {
+	height: 100%;
+	width: 0;
+	border-radius: inherit;
+	background: linear-gradient(
+		90deg,
+		var(--interactive-accent),
+		color-mix(in srgb, var(--interactive-accent) 72%, white 28%)
+	);
+	transition: width 160ms ease;
+}
+
+.cld-download-progress-percent {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-muted);
+}
+
+.cld-overwrite-modal-path {
+	display: block;
+	padding: 10px 12px;
+	border-radius: 12px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.cld-download-path-modal p {
+	margin: 0;
+	color: var(--text-muted);
+}
+
+.cld-download-path-input {
+	width: 100%;
+}
+
+@keyframes cld-skeleton {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
