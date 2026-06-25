@@ -60,7 +60,14 @@ const zh = {
 		componentsDownloadPath: "{label} 下载目录",
 		formsCformDownloadPath: "{label} cform 下载目录",
 		formsJsDownloadPath: "{label} JS 下载目录",
-		formsJsDownloadPathDesc: "表单库中的 .js 文件会下载到这里",
+		componentsDownloadPathDesc:
+			"同步按钮仅用于和「components」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
+		xdbjsDownloadPathDesc:
+			"同步按钮仅用于和「components」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
+		formsCformDownloadPathDesc:
+			"同步按钮仅用于和「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
+		formsJsDownloadPathDesc:
+			"表单库中的 .js 文件会下载到这里。同步按钮仅用于和「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
 		syncHint:
 			"组件库同步 components.folder，xdbjs 同步 components.scriptFolder；表单库 cform 同步 form-flow.formFolder，JS 同步 form-flow.scriptFolder。",
 		syncTooltip: "同步 {path}",
