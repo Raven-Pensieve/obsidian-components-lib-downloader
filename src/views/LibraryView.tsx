@@ -5,19 +5,19 @@ import CPlugin from "@src/main";
 import { FeishuAttachment, FeishuLibraryCard } from "@src/types/feishu";
 import { FEISHU_LIBRARY_PRESETS, FeishuLibraryPreset } from "@src/types/types";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Clock3,
-  Download,
-  ExternalLink,
-  FolderOpen,
-  FolderSync,
-  Grid3X3,
-  ImageIcon,
-  Library,
-  Link2,
-  Package,
-  Shapes,
+	ChevronLeft,
+	ChevronRight,
+	Clock3,
+	Download,
+	ExternalLink,
+	FolderOpen,
+	FolderSync,
+	Grid3X3,
+	ImageIcon,
+	Library,
+	Link2,
+	Package,
+	Shapes,
 } from "lucide-react";
 import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
@@ -93,7 +93,9 @@ export class LibraryView extends ItemView {
 				await this.plugin.loadLibraryCards(this.activePreset);
 		} catch (error) {
 			new Notice(
-				error instanceof Error ? error.message : LL.common.loadingFailed(),
+				error instanceof Error
+					? error.message
+					: LL.common.loadingFailed(),
 			);
 		} finally {
 			this.loading = false;
@@ -205,7 +207,11 @@ function LibraryViewApp(props: LibraryViewAppProps) {
 					<div className="cld-hero-meta-pills">
 						<div className="cld-meta-pill">
 							<Grid3X3 size={14} />
-							<span>{LL.view.fileCount({ count: props.cards.length })}</span>
+							<span>
+								{LL.view.fileCount({
+									count: props.cards.length,
+								})}
+							</span>
 						</div>
 						<div className="cld-meta-pill">
 							<Link2 size={14} />
@@ -284,10 +290,18 @@ function LibraryViewApp(props: LibraryViewAppProps) {
 								setSortMode(event.target.value as CardSortMode)
 							}
 						>
-							<option value="updated-desc">{LL.view.sort.recentlyUpdated()}</option>
-							<option value="updated-asc">{LL.view.sort.earliestUpdated()}</option>
-							<option value="title-asc">{LL.view.sort.titleAsc()}</option>
-							<option value="title-desc">{LL.view.sort.titleDesc()}</option>
+							<option value="updated-desc">
+								{LL.view.sort.recentlyUpdated()}
+							</option>
+							<option value="updated-asc">
+								{LL.view.sort.earliestUpdated()}
+							</option>
+							<option value="title-asc">
+								{LL.view.sort.titleAsc()}
+							</option>
+							<option value="title-desc">
+								{LL.view.sort.titleDesc()}
+							</option>
 						</select>
 					</label>
 				</div>
@@ -478,6 +492,7 @@ function LibraryCard(props: {
 	onPreview: (images: string[], startIndex: number, title: string) => void;
 	onDownload: (recordId: string, attachment: FeishuAttachment) => void;
 }) {
+	const authors = useMemo(() => getAuthorNames(props.card), [props.card]);
 	const previewAttachments = useMemo(
 		() => getPreviewAttachments(props.card),
 		[props.card],
@@ -610,6 +625,18 @@ function LibraryCard(props: {
 			<div className="cld-card-body">
 				<header className="cld-card-header">
 					<h3>{props.card.title}</h3>
+					{authors.length > 0 ? (
+						<div className="cld-card-authors">
+							{authors.map((author) => (
+								<span
+									key={author}
+									className="cld-card-author-tag"
+								>
+									{author}
+								</span>
+							))}
+						</div>
+					) : null}
 					{renderUpdatedAt(props.card)}
 				</header>
 
@@ -634,7 +661,11 @@ function LibraryCard(props: {
 						>
 							<div className="cld-attachment-group-title">
 								<span>{group.fieldName}</span>
-								<em>{LL.view.attachmentCount({ count: group.attachments.length })}</em>
+								<em>
+									{LL.view.attachmentCount({
+										count: group.attachments.length,
+									})}
+								</em>
 							</div>
 							{group.attachments.map((attachment) => (
 								<div
@@ -723,6 +754,24 @@ function getVisibleFields(
 	return configuredFields;
 }
 
+function getAuthorNames(card: FeishuLibraryCard) {
+	const authorField = card.textFields.find((field) =>
+		isAuthorFieldKey(field.key),
+	);
+	if (!authorField) {
+		return [];
+	}
+
+	return authorField.value
+		.split(/[、,，;/；|\s]+/)
+		.map((name) => name.trim())
+		.filter(Boolean);
+}
+
+function isAuthorFieldKey(value: string) {
+	return /(作者|author)/i.test(value);
+}
+
 function normalizeFieldKey(value: string) {
 	return value.trim().toLowerCase();
 }
@@ -744,20 +793,6 @@ function renderUpdatedAt(card: FeishuLibraryCard) {
 			<span>{formatDateTime(timestamp)}</span>
 		</div>
 	);
-}
-
-function getSortLabel(sortMode: CardSortMode) {
-	switch (sortMode) {
-		case "updated-asc":
-			return LL.view.sort.earliestUpdated();
-		case "title-asc":
-			return LL.view.sort.titleAsc();
-		case "title-desc":
-			return LL.view.sort.titleDesc();
-		case "updated-desc":
-		default:
-			return LL.view.sort.recentlyUpdated();
-	}
 }
 
 function getMasonryColumnCount(width: number) {
