@@ -31,4 +31,7 @@ Thumbs.db
 .env
 dist
 .backup/
+
+# docs
 docs/dev
+docs/publish

@@ -22,19 +22,19 @@ export const FEISHU_LIBRARY_PRESETS: Record<
 		wikiUrl:
 			"https://my.feishu.cn/wiki/GDMjwP9rPiuTFwkg0BhcsOfDnab?table=tblxUkoeHQ9gpFya",
 		targetFolderName: "components",
-		visibleFieldKeys: ["作者", "描述"],
+		visibleFieldKeys: ["描述", "类型", "额外使用说明"],
 	},
 	xdbjs: {
 		wikiUrl:
 			"https://my.feishu.cn/wiki/KrFBwdOiUibf6PkWopWcJUTenzh?table=tbliYpzt4EGxEymU",
 		targetFolderName: "xdbjs",
-		visibleFieldKeys: ["作者", "描述"],
+		visibleFieldKeys: ["描述"],
 	},
 	forms: {
 		wikiUrl:
 			"https://my.feishu.cn/wiki/V7SfwXcGmiFqDWkk2Wnc8PCOnPf?table=tblYjPkaaTOujkEY",
 		targetFolderName: "forms",
-		visibleFieldKeys: ["标签", "描述", "类型"],
+		visibleFieldKeys: ["描述", "类型", "额外说明"],
 	},
 };
 

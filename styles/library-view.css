@@ -399,10 +399,34 @@
 	padding: 16px;
 }
 
+.cld-card-header {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
 .cld-card-header h3 {
-	margin: 0 0 6px;
+	margin: 0;
 	font-size: 16px;
 	line-height: 1.35;
+}
+
+.cld-card-authors {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.cld-card-author-tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+	color: var(--text-accent);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.6;
 }
 
 .cld-card-updated-at {
