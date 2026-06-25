@@ -16,7 +16,8 @@ const zh = {
 		unknownSize: "未知大小",
 	},
 	presets: {
-		components: "自定义组件库",
+		componentsOfficial: "组件库（官方）",
+		components: "组件库（第三方）",
 		xdbjs: "xdb js 库",
 		forms: "表单库",
 	},
@@ -46,12 +47,16 @@ const zh = {
 	},
 	settings: {
 		title: "飞书库配置",
+		downloadPathGroupTitle: "下载目录",
+		defaultLibraryPreset: "默认打开的库",
 		tabs: {
 			general: "常规设置",
 			guide: "配置教程",
 		},
 		appIdPlaceholder: "cli_xxx",
 		appSecretPlaceholder: "secret",
+		componentsOfficialPathPlaceholder:
+			"FeishuDownloads/components-official",
 		xdbjsPathPlaceholder: "FeishuDownloads/xdbjs",
 		componentsPathPlaceholder: "FeishuDownloads/components",
 		formsPathPlaceholder: "FeishuDownloads/forms",
@@ -60,16 +65,8 @@ const zh = {
 		componentsDownloadPath: "{label} 下载目录",
 		formsCformDownloadPath: "{label} cform 下载目录",
 		formsJsDownloadPath: "{label} JS 下载目录",
-		componentsDownloadPathDesc:
-			"同步按钮仅用于和「components」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
-		xdbjsDownloadPathDesc:
-			"同步按钮仅用于和「components」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
-		formsCformDownloadPathDesc:
-			"同步按钮仅用于和「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
-		formsJsDownloadPathDesc:
-			"表单库中的 .js 文件会下载到这里。同步按钮仅用于和「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
 		syncHint:
-			"组件库同步 components.folder，xdbjs 同步 components.scriptFolder；表单库 cform 同步 form-flow.formFolder，JS 同步 form-flow.scriptFolder。",
+			"同步按钮仅用于和「components」「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。",
 		syncTooltip: "同步 {path}",
 		notices: {
 			pluginNotInstalled: "未安装插件：{pluginId}",

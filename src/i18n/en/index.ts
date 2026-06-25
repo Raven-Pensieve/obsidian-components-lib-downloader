@@ -16,7 +16,8 @@ const en = {
 		unknownSize: "Unknown size",
 	},
 	presets: {
-		components: "Components Library",
+		componentsOfficial: "Components Library (Official)",
+		components: "Components Library (Third-party)",
 		xdbjs: "xdb js Library",
 		forms: "Forms Library",
 	},
@@ -47,12 +48,16 @@ const en = {
 	},
 	settings: {
 		title: "Feishu library settings",
+		downloadPathGroupTitle: "Download paths",
+		defaultLibraryPreset: "Default library",
 		tabs: {
 			general: "General",
 			guide: "Setup Guide",
 		},
 		appIdPlaceholder: "cli_xxx",
 		appSecretPlaceholder: "secret",
+		componentsOfficialPathPlaceholder:
+			"FeishuDownloads/components-official",
 		xdbjsPathPlaceholder: "FeishuDownloads/xdbjs",
 		componentsPathPlaceholder: "FeishuDownloads/components",
 		formsPathPlaceholder: "FeishuDownloads/forms",
@@ -61,16 +66,8 @@ const en = {
 		componentsDownloadPath: "{label} download path",
 		formsCformDownloadPath: "{label} cform download path",
 		formsJsDownloadPath: "{label} JS download path",
-		componentsDownloadPathDesc:
-			'The sync button only helps match the setting from the "components" plugin and is optional. You can change this path freely for your own use.',
-		xdbjsDownloadPathDesc:
-			'The sync button only helps match the setting from the "components" plugin and is optional. You can change this path freely for your own use.',
-		formsCformDownloadPathDesc:
-			'The sync button only helps match the setting from the "form-flow" plugin and is optional. You can change this path freely for your own use.',
-		formsJsDownloadPathDesc:
-			'Files with a .js extension from the forms library are downloaded here. The sync button only helps match the setting from the "form-flow" plugin and is optional. You can change this path freely for your own use.',
 		syncHint:
-			"Components syncs with components.folder, xdbjs syncs with components.scriptFolder, forms cform syncs with form-flow.formFolder, and forms JS syncs with form-flow.scriptFolder.",
+			'The sync button only helps match the setting from the "components" or "form-flow" plugin and is optional. You can change this path freely for your own use.',
 		syncTooltip: "Sync {path}",
 		notices: {
 			pluginNotInstalled: "Plugin is not installed: {pluginId}",

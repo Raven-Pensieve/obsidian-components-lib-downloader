@@ -5,7 +5,7 @@ import useSettingsStore from "@src/hook/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
 import { getPresetLabel } from "@src/i18n/preset";
 import CPlugin from "@src/main";
-import { ButtonComponent, Notice, Setting } from "obsidian";
+import { ButtonComponent, Notice, Setting, SettingGroup } from "obsidian";
 import { FC, useEffect, useMemo, useRef } from "react";
 
 type ExternalPluginState = {
@@ -77,146 +77,235 @@ const GeneralSettingsPanel: FC = () => {
 		});
 
 		new Setting(el)
-			.setName(
-				LL.settings.componentsDownloadPath({
-					label: getPresetLabel("components"),
-				}),
-			)
-			.setDesc(LL.settings.componentsDownloadPathDesc())
-			.addText((text) => {
-				text.setPlaceholder(LL.settings.componentsPathPlaceholder())
-					.setValue(settings.feishu.downloadPaths.components)
+			.setName(LL.settings.defaultLibraryPreset())
+			.addDropdown((dropdown) => {
+				for (const preset of Object.keys(
+					settings.feishu.downloadPaths,
+				)) {
+					if (preset === "formScripts") continue;
+					dropdown.addOption(
+						preset,
+						getPresetLabel(
+							preset as keyof typeof settings.feishu.downloadPaths &
+								(
+									| "componentsOfficial"
+									| "components"
+									| "xdbjs"
+									| "forms"
+								),
+						),
+					);
+				}
+
+				dropdown
+					.setValue(settings.feishu.defaultLibraryPreset)
 					.onChange(async (value) => {
 						await settingsStore.updateSettingByPath(
-							"feishu.downloadPaths.components",
-							value.trim(),
+							"feishu.defaultLibraryPreset",
+							value,
 						);
 					});
-			})
-			.addButton((button) => {
-				configureSyncButton(
-					button,
-					LL.settings.syncTooltip({ path: "components.folder" }),
-					async () => {
-						await syncExternalSetting({
-							settingsStore,
-							pluginId: "components",
-							settingKey: "folder",
-							targetPath: "feishu.downloadPaths.components",
-							label: LL.settings.componentsDownloadPath({
-								label: getPresetLabel("components"),
-							}),
-						});
-					},
-				);
 			});
 
 		new Setting(el)
-			.setName(
-				LL.settings.xdbjsDownloadPath({
-					label: getPresetLabel("xdbjs"),
-				}),
-			)
-			.setDesc(LL.settings.xdbjsDownloadPathDesc())
-			.addText((text) => {
-				text.setPlaceholder(LL.settings.xdbjsPathPlaceholder())
-					.setValue(settings.feishu.downloadPaths.xdbjs)
-					.onChange(async (value) => {
-						await settingsStore.updateSettingByPath(
-							"feishu.downloadPaths.xdbjs",
-							value.trim(),
-						);
-					});
-			})
-			.addButton((button) => {
-				configureSyncButton(
-					button,
-					LL.settings.syncTooltip({
-						path: "components.scriptFolder",
+			.setName(LL.settings.downloadPathGroupTitle())
+			.setDesc(LL.settings.syncHint())
+			.setHeading();
+
+		const folderSettingsGroup = new SettingGroup(el);
+
+		folderSettingsGroup.addSetting((setting) => {
+			setting
+				.setName(
+					LL.settings.componentsDownloadPath({
+						label: getPresetLabel("componentsOfficial"),
 					}),
-					async () => {
-						await syncExternalSetting({
-							settingsStore,
-							pluginId: "components",
-							settingKey: "scriptFolder",
-							targetPath: "feishu.downloadPaths.xdbjs",
-							label: LL.settings.xdbjsDownloadPath({
-								label: getPresetLabel("xdbjs"),
-							}),
+				)
+				.addText((text) => {
+					text.setPlaceholder(
+						LL.settings.componentsOfficialPathPlaceholder(),
+					)
+						.setValue(
+							settings.feishu.downloadPaths.componentsOfficial,
+						)
+						.onChange(async (value) => {
+							await settingsStore.updateSettingByPath(
+								"feishu.downloadPaths.componentsOfficial",
+								value.trim(),
+							);
 						});
-					},
-				);
-			});
+				})
+				.addButton((button) => {
+					configureSyncButton(
+						button,
+						LL.settings.syncTooltip({ path: "components.folder" }),
+						async () => {
+							await syncExternalSetting({
+								settingsStore,
+								pluginId: "components",
+								settingKey: "folder",
+								targetPath:
+									"feishu.downloadPaths.componentsOfficial",
+								label: LL.settings.componentsDownloadPath({
+									label: getPresetLabel("components"),
+								}),
+							});
+						},
+					);
+				});
+		});
 
-		new Setting(el)
-			.setName(
-				LL.settings.formsCformDownloadPath({
-					label: getPresetLabel("forms"),
-				}),
-			)
-			.setDesc(LL.settings.formsCformDownloadPathDesc())
-			.addText((text) => {
-				text.setPlaceholder(LL.settings.formsPathPlaceholder())
-					.setValue(settings.feishu.downloadPaths.forms)
-					.onChange(async (value) => {
-						await settingsStore.updateSettingByPath(
-							"feishu.downloadPaths.forms",
-							value.trim(),
-						);
-					});
-			})
-			.addButton((button) => {
-				configureSyncButton(
-					button,
-					LL.settings.syncTooltip({ path: "form-flow.formFolder" }),
-					async () => {
-						await syncExternalSetting({
-							settingsStore,
-							pluginId: "form-flow",
-							settingKey: "formFolder",
-							targetPath: "feishu.downloadPaths.forms",
-							label: LL.settings.formsCformDownloadPath({
-								label: getPresetLabel("forms"),
-							}),
+		folderSettingsGroup.addSetting((setting) => {
+			setting
+				.setName(
+					LL.settings.componentsDownloadPath({
+						label: getPresetLabel("components"),
+					}),
+				)
+				.addText((text) => {
+					text.setPlaceholder(LL.settings.componentsPathPlaceholder())
+						.setValue(settings.feishu.downloadPaths.components)
+						.onChange(async (value) => {
+							await settingsStore.updateSettingByPath(
+								"feishu.downloadPaths.components",
+								value.trim(),
+							);
 						});
-					},
-				);
-			});
+				})
+				.addButton((button) => {
+					configureSyncButton(
+						button,
+						LL.settings.syncTooltip({ path: "components.folder" }),
+						async () => {
+							await syncExternalSetting({
+								settingsStore,
+								pluginId: "components",
+								settingKey: "folder",
+								targetPath: "feishu.downloadPaths.components",
+								label: LL.settings.componentsDownloadPath({
+									label: getPresetLabel("components"),
+								}),
+							});
+						},
+					);
+				});
+		});
 
-		new Setting(el)
-			.setName(
-				LL.settings.formsJsDownloadPath({
-					label: getPresetLabel("forms"),
-				}),
-			)
-			.setDesc(LL.settings.formsJsDownloadPathDesc())
-			.addText((text) => {
-				text.setPlaceholder(LL.settings.formScriptsPathPlaceholder())
-					.setValue(settings.feishu.downloadPaths.formScripts)
-					.onChange(async (value) => {
-						await settingsStore.updateSettingByPath(
-							"feishu.downloadPaths.formScripts",
-							value.trim(),
-						);
-					});
-			})
-			.addButton((button) => {
-				configureSyncButton(
-					button,
-					LL.settings.syncTooltip({ path: "form-flow.scriptFolder" }),
-					async () => {
-						await syncExternalSetting({
-							settingsStore,
-							pluginId: "form-flow",
-							settingKey: "scriptFolder",
-							targetPath: "feishu.downloadPaths.formScripts",
-							label: LL.settings.formsJsDownloadPath({
-								label: getPresetLabel("forms"),
-							}),
+		folderSettingsGroup.addSetting((setting) => {
+			setting
+				.setName(
+					LL.settings.xdbjsDownloadPath({
+						label: getPresetLabel("xdbjs"),
+					}),
+				)
+				.addText((text) => {
+					text.setPlaceholder(LL.settings.xdbjsPathPlaceholder())
+						.setValue(settings.feishu.downloadPaths.xdbjs)
+						.onChange(async (value) => {
+							await settingsStore.updateSettingByPath(
+								"feishu.downloadPaths.xdbjs",
+								value.trim(),
+							);
 						});
-					},
-				);
-			});
+				})
+				.addButton((button) => {
+					configureSyncButton(
+						button,
+						LL.settings.syncTooltip({
+							path: "components.scriptFolder",
+						}),
+						async () => {
+							await syncExternalSetting({
+								settingsStore,
+								pluginId: "components",
+								settingKey: "scriptFolder",
+								targetPath: "feishu.downloadPaths.xdbjs",
+								label: LL.settings.xdbjsDownloadPath({
+									label: getPresetLabel("xdbjs"),
+								}),
+							});
+						},
+					);
+				});
+		});
+
+		folderSettingsGroup.addSetting((setting) => {
+			setting
+				.setName(
+					LL.settings.formsCformDownloadPath({
+						label: getPresetLabel("forms"),
+					}),
+				)
+				.addText((text) => {
+					text.setPlaceholder(LL.settings.formsPathPlaceholder())
+						.setValue(settings.feishu.downloadPaths.forms)
+						.onChange(async (value) => {
+							await settingsStore.updateSettingByPath(
+								"feishu.downloadPaths.forms",
+								value.trim(),
+							);
+						});
+				})
+				.addButton((button) => {
+					configureSyncButton(
+						button,
+						LL.settings.syncTooltip({
+							path: "form-flow.formFolder",
+						}),
+						async () => {
+							await syncExternalSetting({
+								settingsStore,
+								pluginId: "form-flow",
+								settingKey: "formFolder",
+								targetPath: "feishu.downloadPaths.forms",
+								label: LL.settings.formsCformDownloadPath({
+									label: getPresetLabel("forms"),
+								}),
+							});
+						},
+					);
+				});
+		});
+
+		folderSettingsGroup.addSetting((setting) => {
+			setting
+				.setName(
+					LL.settings.formsJsDownloadPath({
+						label: getPresetLabel("forms"),
+					}),
+				)
+				.addText((text) => {
+					text.setPlaceholder(
+						LL.settings.formScriptsPathPlaceholder(),
+					)
+						.setValue(settings.feishu.downloadPaths.formScripts)
+						.onChange(async (value) => {
+							await settingsStore.updateSettingByPath(
+								"feishu.downloadPaths.formScripts",
+								value.trim(),
+							);
+						});
+				})
+				.addButton((button) => {
+					configureSyncButton(
+						button,
+						LL.settings.syncTooltip({
+							path: "form-flow.scriptFolder",
+						}),
+						async () => {
+							await syncExternalSetting({
+								settingsStore,
+								pluginId: "form-flow",
+								settingKey: "scriptFolder",
+								targetPath: "feishu.downloadPaths.formScripts",
+								label: LL.settings.formsJsDownloadPath({
+									label: getPresetLabel("forms"),
+								}),
+							});
+						},
+					);
+				});
+		});
 	}, [settings, settingsStore]);
 
 	return <div ref={generalRef} />;
