@@ -59,7 +59,7 @@ export class DownloadPathModal extends Modal {
 			.setName(LL.modals.downloadPath.primaryName())
 			.setDesc(LL.modals.downloadPath.primaryDesc())
 			.addText((text) => {
-				text.setPlaceholder("FeishuDownloads/components")
+				text.setPlaceholder(getPrimaryPathPlaceholder(this.preset))
 					.setValue(this.initialPath)
 					.onChange((value) => {
 						this.inputValue = value;
@@ -132,5 +132,19 @@ export class DownloadPathModal extends Modal {
 		this.settled = true;
 		this.resolveResult?.(updated);
 		this.close();
+	}
+}
+
+function getPrimaryPathPlaceholder(preset: FeishuLibraryPreset) {
+	switch (preset) {
+		case "componentsOfficial":
+			return "FeishuDownloads/components-official";
+		case "xdbjs":
+			return "FeishuDownloads/xdbjs";
+		case "forms":
+			return "FeishuDownloads/forms";
+		case "components":
+		default:
+			return "FeishuDownloads/components";
 	}
 }

@@ -908,6 +908,7 @@ function isImageAttachment(attachment: FeishuAttachment) {
 
 function PresetIcon(props: { preset: FeishuLibraryPreset }) {
 	switch (props.preset) {
+		case "componentsOfficial":
 		case "components":
 			return <Package size={16} />;
 		case "forms":

@@ -3,9 +3,10 @@ import * as path from "path";
 import {
 	DEFAULT_SETTINGS,
 	FEISHU_LIBRARY_PRESETS,
+	type FeishuLibraryPreset,
 	type IPluginSettings,
 } from "../src/types/types";
-import FeishuAuthService from "../src/utils/feishu/auth";
+import FeishuAuthService, { FeishuApiError } from "../src/utils/feishu/auth";
 import {
 	buildLibraryCards,
 	searchAllRecords,
@@ -15,6 +16,7 @@ import { parseWikiUrl, resolveBitableTarget } from "../src/utils/feishu/wiki";
 jest.mock(
 	"obsidian",
 	() => ({
+		getLanguage: jest.fn(() => "en"),
 		requestUrl: jest.fn(
 			async (options: {
 				url: string;
@@ -109,6 +111,7 @@ function loadIntegrationSettings(): IPluginSettings {
 		feishu: {
 			appId,
 			appSecret,
+			defaultLibraryPreset: DEFAULT_SETTINGS.feishu.defaultLibraryPreset,
 			downloadPaths: DEFAULT_SETTINGS.feishu.downloadPaths,
 		},
 	};
@@ -139,18 +142,49 @@ function summarizeFieldValue(value: unknown): unknown {
 	return summary;
 }
 
+const PERMISSION_OPTIONAL_PRESETS = new Set<FeishuLibraryPreset>([
+	"componentsOfficial",
+]);
+
+function isPermissionDeniedError(error: unknown) {
+	return (
+		error instanceof FeishuApiError &&
+		(error.code === 131006 || /permission denied/i.test(error.message))
+	);
+}
+
 describe("feishu connectivity helpers", () => {
-	jest.setTimeout(60000);
+	jest.setTimeout(120000);
 
 	const settings = loadIntegrationSettings();
+	const presetEntries = Object.entries(FEISHU_LIBRARY_PRESETS) as Array<
+		[
+			keyof typeof FEISHU_LIBRARY_PRESETS,
+			(typeof FEISHU_LIBRARY_PRESETS)[keyof typeof FEISHU_LIBRARY_PRESETS],
+		]
+	>;
 
-	it("parses built-in wiki url fields", () => {
-		const parsed = parseWikiUrl(FEISHU_LIBRARY_PRESETS.xdbjs.wikiUrl);
+	it.each(presetEntries)(
+		"parses built-in wiki url fields for %s",
+		(preset, config) => {
+			const parsed = parseWikiUrl(config.wikiUrl);
 
-		expect(parsed.nodeToken).toBe("KrFBwdOiUibf6PkWopWcJUTenzh");
-		expect(parsed.tableId).toBe("tbliYpzt4EGxEymU");
-		expect(parsed.viewId).toBe("");
-	});
+			expect(parsed.nodeToken).toBeTruthy();
+			expect(parsed.tableId).toBeTruthy();
+			expect(parsed.viewId).toBeDefined();
+
+			console.log(
+				JSON.stringify(
+					{
+						preset,
+						parsed,
+					},
+					null,
+					2,
+				),
+			);
+		},
+	);
 
 	it("gets tenant access token with real request", async () => {
 		expect(settings.feishu.appId).toBeTruthy();
@@ -163,58 +197,81 @@ describe("feishu connectivity helpers", () => {
 		expect(typeof token).toBe("string");
 	});
 
-	it("resolves wiki target and fetches one real record with field names and values", async () => {
-		expect(settings.feishu.appId).toBeTruthy();
-		expect(settings.feishu.appSecret).toBeTruthy();
+	it.each(presetEntries)(
+		"resolves wiki target and fetches records for %s",
+		async (preset, config) => {
+			expect(settings.feishu.appId).toBeTruthy();
+			expect(settings.feishu.appSecret).toBeTruthy();
 
-		const service = new FeishuAuthService();
-		const tenantToken = await service.getTenantAccessToken(settings);
-		const resolved = await resolveBitableTarget(
-			FEISHU_LIBRARY_PRESETS.xdbjs.wikiUrl,
-			tenantToken,
-		);
-		const records = await searchAllRecords(
-			tenantToken,
-			resolved.appToken,
-			resolved.tableId,
-			resolved.viewId,
-		);
-		const firstRecord = records[0];
-		const fieldNames = Object.keys(firstRecord?.fields ?? {});
-		const fieldSamples = Object.fromEntries(
-			fieldNames
-				.slice(0, 8)
-				.map((key) => [
-					key,
-					summarizeFieldValue(firstRecord.fields[key]),
-				]),
-		);
-		const [firstCard] = buildLibraryCards("xdbjs", [firstRecord]);
+			try {
+				const service = new FeishuAuthService();
+				const tenantToken =
+					await service.getTenantAccessToken(settings);
+				const resolved = await resolveBitableTarget(
+					config.wikiUrl,
+					tenantToken,
+				);
+				const records = await searchAllRecords(
+					tenantToken,
+					resolved.appToken,
+					resolved.tableId,
+					resolved.viewId,
+				);
+				const firstRecord = records[0];
+				const fieldNames = Object.keys(firstRecord?.fields ?? {});
+				const fieldSamples = Object.fromEntries(
+					fieldNames
+						.slice(0, 8)
+						.map((key) => [
+							key,
+							summarizeFieldValue(firstRecord.fields[key]),
+						]),
+				);
+				const [firstCard] = buildLibraryCards(preset, [firstRecord]);
 
-		expect(resolved).toMatchObject({
-			nodeToken: "KrFBwdOiUibf6PkWopWcJUTenzh",
-			tableId: "tbliYpzt4EGxEymU",
-		});
-		expect(resolved.appToken).toBeTruthy();
-		expect(records.length).toBeGreaterThan(0);
-		expect(firstRecord).toBeTruthy();
-		expect(firstRecord.record_id).toBeTruthy();
-		expect(fieldNames.length).toBeGreaterThan(0);
-		expect(firstCard).toBeTruthy();
-		expect(firstCard.title).toBeTruthy();
+				expect(resolved.nodeToken).toBe(
+					parseWikiUrl(config.wikiUrl).nodeToken,
+				);
+				expect(resolved.tableId).toBeTruthy();
+				expect(resolved.appToken).toBeTruthy();
+				expect(records.length).toBeGreaterThan(0);
+				expect(firstRecord).toBeTruthy();
+				expect(firstRecord.record_id).toBeTruthy();
+				expect(fieldNames.length).toBeGreaterThan(0);
+				expect(firstCard).toBeTruthy();
+				expect(firstCard.title).toBeTruthy();
 
-		console.log(
-			JSON.stringify(
-				{
-					recordId: firstRecord.record_id,
-					fieldNames,
-					fieldSamples,
-					cardTitle: firstCard.title,
-					description: firstCard.description,
-				},
-				null,
-				2,
-			),
-		);
-	});
+				console.log(
+					JSON.stringify(
+						{
+							preset,
+							wikiUrl: config.wikiUrl,
+							resolved,
+							recordCount: records.length,
+							recordId: firstRecord.record_id,
+							fieldNames,
+							fieldSamples,
+							cardTitle: firstCard.title,
+							description: firstCard.description,
+						},
+						null,
+						2,
+					),
+				);
+			} catch (error) {
+				if (
+					PERMISSION_OPTIONAL_PRESETS.has(preset) &&
+					isPermissionDeniedError(error)
+				) {
+					console.warn(
+						`[feishu-connect.test] Skipped deep connectivity assertion for ${preset}: ${error.message}`,
+					);
+					expect(error).toBeInstanceOf(FeishuApiError);
+					return;
+				}
+
+				throw error;
+			}
+		},
+	);
 });

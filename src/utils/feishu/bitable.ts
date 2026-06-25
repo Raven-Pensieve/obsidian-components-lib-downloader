@@ -123,14 +123,7 @@ function buildLibraryCard(
 		.map(([key, value]) => ({ key, value: extractTextValue(value) }))
 		.filter((field) => field.value.length > 0);
 
-	const titleField =
-		textFields.find((field) =>
-			/^(名称|名字|标题|title|name)$/i.test(field.key),
-		) ||
-		textFields.find((field) =>
-			/(名称|名字|标题|title|name)/i.test(field.key),
-		) ||
-		textFields[0];
+	const titleField = getTitleField(preset, textFields);
 	const title =
 		titleField?.value ||
 		titleField?.key ||
@@ -149,6 +142,35 @@ function buildLibraryCard(
 		textFields: textFields.slice(0, 6),
 		attachmentGroups: extractAttachmentGroups(record),
 	};
+}
+
+function getTitleField(
+	preset: FeishuLibraryPreset,
+	textFields: Array<{ key: string; value: string }>,
+) {
+	const presetPreferredTitleKeys: Partial<
+		Record<FeishuLibraryPreset, string[]>
+	> = {
+		componentsOfficial: ["文本"],
+	};
+
+	const preferredKeys = presetPreferredTitleKeys[preset] ?? [];
+	for (const key of preferredKeys) {
+		const field = textFields.find((item) => item.key === key);
+		if (field) {
+			return field;
+		}
+	}
+
+	return (
+		textFields.find((field) =>
+			/^(名称|名字|标题|title|name)$/i.test(field.key),
+		) ||
+		textFields.find((field) =>
+			/(名称|名字|标题|title|name)/i.test(field.key),
+		) ||
+		textFields[0]
+	);
 }
 
 function isAttachmentLike(value: unknown): value is FeishuAttachment {

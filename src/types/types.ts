@@ -1,7 +1,12 @@
 export type OverwriteMode = "skip" | "rename" | "overwrite";
-export type FeishuLibraryPreset = "components" | "xdbjs" | "forms";
+export type FeishuLibraryPreset =
+	| "componentsOfficial"
+	| "components"
+	| "xdbjs"
+	| "forms";
 
 export interface LibraryDownloadPaths {
+	componentsOfficial: string;
 	xdbjs: string;
 	components: string;
 	forms: string;
@@ -18,6 +23,12 @@ export const FEISHU_LIBRARY_PRESETS: Record<
 	FeishuLibraryPreset,
 	FeishuLibraryPresetConfig
 > = {
+	componentsOfficial: {
+		wikiUrl:
+			"https://my.feishu.cn/wiki/Bmz3wJSRHiwzWvkfKx5caPawnde?table=tblRk7emhFNjFIQF",
+		targetFolderName: "components-official",
+		visibleFieldKeys: ["描述", "类型", "额外使用说明"],
+	},
 	components: {
 		wikiUrl:
 			"https://my.feishu.cn/wiki/GDMjwP9rPiuTFwkg0BhcsOfDnab?table=tblxUkoeHQ9gpFya",
@@ -41,6 +52,7 @@ export const FEISHU_LIBRARY_PRESETS: Record<
 export interface IFeishuSettings {
 	appId: string;
 	appSecret: string;
+	defaultLibraryPreset: FeishuLibraryPreset;
 	downloadPaths: LibraryDownloadPaths;
 }
 
@@ -61,7 +73,9 @@ export const DEFAULT_SETTINGS: IPluginSettings = {
 	feishu: {
 		appId: "",
 		appSecret: "",
+		defaultLibraryPreset: "components",
 		downloadPaths: {
+			componentsOfficial: "FeishuDownloads/components-official",
 			xdbjs: "FeishuDownloads/xdbjs",
 			components: "FeishuDownloads/components",
 			forms: "FeishuDownloads/forms",

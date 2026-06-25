@@ -105,6 +105,7 @@ function loadIntegrationSettings(): IPluginSettings {
 				"APP_SECRET",
 				"FEISHU_APP_SECRET",
 			),
+			defaultLibraryPreset: DEFAULT_SETTINGS.feishu.defaultLibraryPreset,
 			downloadPaths: DEFAULT_SETTINGS.feishu.downloadPaths,
 		},
 	};

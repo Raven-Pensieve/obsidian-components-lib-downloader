@@ -28,7 +28,6 @@ import { getExistingBinaryFilePath, writeBinaryFile } from "./utils/vault";
 import { LIBRARY_VIEW_TYPE, LibraryView } from "./views/LibraryView";
 
 export default class CPlugin extends Plugin {
-	readonly defaultLibraryPreset: FeishuLibraryPreset = "components";
 	readonly overwriteMode: OverwriteMode = "rename";
 	settings!: IPluginSettings;
 	readonly settingsStore = new SettingsStore(this);
@@ -60,6 +59,10 @@ export default class CPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	get defaultLibraryPreset(): FeishuLibraryPreset {
+		return this.settings.feishu.defaultLibraryPreset;
 	}
 
 	getDownloadPath(preset: FeishuLibraryPreset, fileName?: string) {
