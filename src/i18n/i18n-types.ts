@@ -205,7 +205,19 @@ type RootTranslation = {
 		 */
 		formsJsDownloadPath: RequiredParams<'label'>
 		/**
-		 * 表​单​库​中​的​ ​.​j​s​ ​文​件​会​下​载​到​这​里
+		 * 同​步​按​钮​仅​用​于​和​「​c​o​m​p​o​n​e​n​t​s​」​插​件​中​的​设​置​保​持​一​致​，​并​非​强​制​，​你​也​可​以​按​自​己​的​需​要​修​改​这​个​目​录​。
+		 */
+		componentsDownloadPathDesc: string
+		/**
+		 * 同​步​按​钮​仅​用​于​和​「​c​o​m​p​o​n​e​n​t​s​」​插​件​中​的​设​置​保​持​一​致​，​并​非​强​制​，​你​也​可​以​按​自​己​的​需​要​修​改​这​个​目​录​。
+		 */
+		xdbjsDownloadPathDesc: string
+		/**
+		 * 同​步​按​钮​仅​用​于​和​「​f​o​r​m​-​f​l​o​w​」​插​件​中​的​设​置​保​持​一​致​，​并​非​强​制​，​你​也​可​以​按​自​己​的​需​要​修​改​这​个​目​录​。
+		 */
+		formsCformDownloadPathDesc: string
+		/**
+		 * 表​单​库​中​的​ ​.​j​s​ ​文​件​会​下​载​到​这​里​。​同​步​按​钮​仅​用​于​和​「​f​o​r​m​-​f​l​o​w​」​插​件​中​的​设​置​保​持​一​致​，​并​非​强​制​，​你​也​可​以​按​自​己​的​需​要​修​改​这​个​目​录​。
 		 */
 		formsJsDownloadPathDesc: string
 		/**
@@ -692,7 +704,19 @@ export type TranslationFunctions = {
 		 */
 		formsJsDownloadPath: (arg: { label: unknown }) => LocalizedString
 		/**
-		 * 表单库中的 .js 文件会下载到这里
+		 * 同步按钮仅用于和「components」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。
+		 */
+		componentsDownloadPathDesc: () => LocalizedString
+		/**
+		 * 同步按钮仅用于和「components」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。
+		 */
+		xdbjsDownloadPathDesc: () => LocalizedString
+		/**
+		 * 同步按钮仅用于和「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。
+		 */
+		formsCformDownloadPathDesc: () => LocalizedString
+		/**
+		 * 表单库中的 .js 文件会下载到这里。同步按钮仅用于和「form-flow」插件中的设置保持一致，并非强制，你也可以按自己的需要修改这个目录。
 		 */
 		formsJsDownloadPathDesc: () => LocalizedString
 		/**

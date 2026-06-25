@@ -5,8 +5,8 @@ import { LL } from "@src/i18n/i18n";
 import { getPresetLabel } from "@src/i18n/preset";
 import "@styles/styles";
 import { Notice, Plugin, WorkspaceLeaf } from "obsidian";
-import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
+import { CLDSettingsTab } from "./settings/SettingsTab";
 import {
 	FeishuAttachment,
 	FeishuLibraryCard,
@@ -43,7 +43,7 @@ export default class CPlugin extends Plugin {
 
 		this.registerLeafViews();
 
-		this.addSettingTab(new PluginSettingTab(this));
+		this.addSettingTab(new CLDSettingsTab(this));
 
 		this.registerCommands();
 		this.registerRibbonCommands();
