@@ -79,6 +79,7 @@ const en = {
 	view: {
 		hero: {
 			openWikiLink: "Open wiki link",
+			contribute: "Submit a contribution",
 		},
 		actions: {
 			refreshCurrentLibrary: "Refresh current library",

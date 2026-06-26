@@ -15,6 +15,7 @@ export interface LibraryDownloadPaths {
 
 export interface FeishuLibraryPresetConfig {
 	wikiUrl: string;
+	contributeUrl?: string;
 	targetFolderName: string;
 	visibleFieldKeys: string[];
 }
@@ -32,18 +33,23 @@ export const FEISHU_LIBRARY_PRESETS: Record<
 	components: {
 		wikiUrl:
 			"https://my.feishu.cn/wiki/GDMjwP9rPiuTFwkg0BhcsOfDnab?table=tblxUkoeHQ9gpFya",
+		contributeUrl: "https://qrcode.ravenhogwarts.top/cps-lib-contribute",
 		targetFolderName: "components",
 		visibleFieldKeys: ["描述", "类型", "额外使用说明"],
 	},
 	xdbjs: {
 		wikiUrl:
 			"https://my.feishu.cn/wiki/KrFBwdOiUibf6PkWopWcJUTenzh?table=tbliYpzt4EGxEymU",
+		contributeUrl:
+			"https://qrcode.ravenhogwarts.top/cps-xdbjs-lib-contribute",
 		targetFolderName: "xdbjs",
 		visibleFieldKeys: ["描述"],
 	},
 	forms: {
 		wikiUrl:
 			"https://my.feishu.cn/wiki/V7SfwXcGmiFqDWkk2Wnc8PCOnPf?table=tblYjPkaaTOujkEY",
+		contributeUrl:
+			"https://qrcode.ravenhogwarts.top/formflow-lib-contribute",
 		targetFolderName: "forms",
 		visibleFieldKeys: ["描述", "类型", "额外说明"],
 	},

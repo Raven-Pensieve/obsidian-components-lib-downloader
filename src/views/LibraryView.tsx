@@ -17,6 +17,7 @@ import {
 	Library,
 	Link2,
 	Package,
+	PenSquare,
 	Shapes,
 } from "lucide-react";
 import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
@@ -217,6 +218,18 @@ function LibraryViewApp(props: LibraryViewAppProps) {
 							<Link2 size={14} />
 							<span>{presetLabel}</span>
 						</div>
+						{presetInfo.contributeUrl ? (
+							<a
+								className="cld-meta-pill cld-meta-pill-link"
+								href={presetInfo.contributeUrl}
+								target="_blank"
+								rel="noreferrer"
+								title={LL.view.hero.contribute()}
+							>
+								<PenSquare size={14} />
+								<span>{LL.view.hero.contribute()}</span>
+							</a>
+						) : null}
 					</div>
 					<div className="cld-hero-link-row">
 						<div className="cld-hero-link-box">
