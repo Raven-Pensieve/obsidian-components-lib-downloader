@@ -106,6 +106,23 @@
 	font-weight: 600;
 }
 
+.cld-meta-pill-link {
+	text-decoration: none;
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	cursor: pointer;
+	transition:
+		transform 120ms ease,
+		box-shadow 120ms ease,
+		border-color 120ms ease;
+}
+
+.cld-meta-pill-link:hover {
+	transform: translateY(-1px);
+	border-color: var(--interactive-accent);
+	box-shadow: 0 6px 14px rgb(15 23 42 / 0.08);
+}
+
 .cld-hero-link-row {
 	display: flex;
 	align-items: center;

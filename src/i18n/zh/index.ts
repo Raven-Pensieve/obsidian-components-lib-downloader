@@ -78,6 +78,7 @@ const zh = {
 	view: {
 		hero: {
 			openWikiLink: "打开知识库链接",
+			contribute: "我要投稿",
 		},
 		actions: {
 			refreshCurrentLibrary: "刷新当前库",
