@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Raven-Pensieve/obsidian-components-lib-downloader/compare/1.1.0...1.1.1) (2026-06-26)
+
+
+### Features
+
+* 增加库投稿链接 ([6ab6a87](https://github.com/Raven-Pensieve/obsidian-components-lib-downloader/commit/6ab6a8714449673140374483b26c1abc4fe530b6))
+
 # [1.1.0](https://github.com/Raven-Pensieve/obsidian-components-lib-downloader/compare/1.0.0...1.1.0) (2026-06-25)
 
 
